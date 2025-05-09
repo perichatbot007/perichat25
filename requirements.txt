@@ -1,0 +1,9 @@
+Flask
+flask-cors
+pymongo
+python-dotenv
+bcrypt
+requests
+langdetect
+sentence-transformers
+gunicorn
