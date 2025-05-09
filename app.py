@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import bcrypt
 import os
 
-from chat import Chatbot  # ✅ Use the class, not a function
+from chatbot import Chatbot  # ✅ Updated import
 
 # Load environment variables from .env file
 load_dotenv()
@@ -14,13 +14,13 @@ load_dotenv()
 app = Flask(__name__, static_url_path='/static', static_folder='static', template_folder='templates')
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# ✅ MongoDB connection
+# MongoDB connection from .env
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client.get_database("PeriChat")
 users_collection = db.get_collection("users")
 
-# ✅ Instantiate the chatbot
+# ✅ Initialize chatbot instance
 bot = Chatbot()
 
 @app.route("/")
@@ -70,13 +70,14 @@ def chat():
     if not user_message:
         return jsonify({"response": "Empty message received."}), 400
     try:
-        response = bot.get_response(user_message)  # ✅ Uses Chatbot class
-        return jsonify({"response": response})
+        # ✅ Use the Chatbot instance to get a response
+        bot_reply = bot.get_response(user_message)
+        return jsonify({"response": bot_reply})
     except Exception as e:
         import traceback
+        print("[Flask Error]")
         traceback.print_exc()
         return jsonify({"response": "An error occurred on the server."}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # ✅ Use PORT from environment
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
